@@ -1,0 +1,6 @@
+{
+  "name": "CapyStack AI",
+  "description": "CapyStack - The chillest all-in-one AI stack collapser. Generates landing pages, crawls localized Google Maps leads, schedules viral social copy, and grades search engine citations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -15,7 +15,7 @@ import { CompetitorAnalysis, GEOSEOScoreResult, RepurposeResult, BrandProfile } 
 import { Sparkles, Terminal, Info, BarChart3, HelpCircle, AlertCircle } from "lucide-react";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "academy" | "course" | "sales">("competitor");
+  const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "course">("competitor");
 
   // State to hold cached runs for seamless UX and pre-populated demos
   const [competitorCache, setCompetitorCache] = useState<CompetitorAnalysis | null>(null);
@@ -317,17 +317,6 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
               <span>Developer Node</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab("academy")}
-              className={`px-4.5 py-2.5 text-sm font-semibold rounded-xl flex items-center gap-2 transition-all ${
-                activeTab === "academy"
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow-lg shadow-amber-500/10"
-                  : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800/80"
-              }`}
-            >
-              <span>👑</span>
-              <span>Authority Academy & Co-pilot</span>
-            </button>
 
             <button
               onClick={() => setActiveTab("pricing")}
@@ -353,17 +342,6 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
               <span>Academy Masterclass & Course</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab("sales")}
-              className={`px-4.5 py-2.5 text-sm font-semibold rounded-xl flex items-center gap-2 transition-all ${
-                activeTab === "sales"
-                  ? "bg-gradient-to-r from-pink-500 to-rose-500 text-slate-950 font-bold shadow-lg shadow-rose-500/10"
-                  : "bg-slate-900 text-slate-400 hover:text-emerald-400 border border-slate-800/80"
-              }`}
-            >
-              <span>🔥</span>
-              <span>Sales Landing & Lead Magnet</span>
-            </button>
           </div>
 
           {/* Quick Demo Prepopulator button */}
@@ -384,6 +362,9 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
               initialData={competitorCache}
             />
           )}
+            {activeTab === "maps" && (
+              <MapsScraperTab />
+            )}
 
           {activeTab === "scorecard" && (
             <ScorecardTab
@@ -421,17 +402,11 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
             <PricingTab />
           )}
 
-          {activeTab === "academy" && (
-            <AcademyTab />
-          )}
 
           {activeTab === "course" && (
             <InteractiveCourseTab />
           )}
 
-          {activeTab === "sales" && (
-            <SalesLandingTab />
-            )}
             {activeTab === "maps" && (
               <MapsScraperTab />
           )}

@@ -107,3 +107,61 @@ app.post("/api/scrape-maps-leads", async (req, res) => {
     res.status(500).json({ error: "Ollama unreachable" });
   }
 });
+
+app.post("/api/score-geo-seo", async (req, res) => {
+  const { contentToAnalyze } = req.body;
+  if (!contentToAnalyze) return res.status(400).json({ error: "contentToAnalyze required" });
+
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: [
+          { role: "system", content: `You are a GEO and SEO scoring engine. Analyze content and return ONLY valid JSON matching this exact structure, no markdown, no explanation:
+{
+  "urlOrContent": "the input text",
+  "traditionalSeoScore": 0-100,
+  "geoScore": 0-100,
+  "overallGrade": "A/B/C/D/F",
+  "metrics": {
+    "authoritySignals": 0-100,
+    "citationDirectness": 0-100,
+    "entityAlignment": 0-100,
+    "readabilityAndFlow": 0-100,
+    "structuredDataScore": 0-100
+  },
+  "aiPlatformsScore": [
+    {"platform":"ChatGPT","citationProbability":0-100,"viabilityStatus":"Strong Citation"},
+    {"platform":"Perplexity","citationProbability":0-100,"viabilityStatus":"Moderate Citation"},
+    {"platform":"Claude","citationProbability":0-100,"viabilityStatus":"Low Citation"},
+    {"platform":"Gemini","citationProbability":0-100,"viabilityStatus":"Moderate Citation"}
+  ],
+  "geoBoostActions": [
+    {"category":"Structured Data","action":"Add FAQ schema markup","impact":"Critical"},
+    {"category":"Authoritativeness","action":"Add author bio with credentials","impact":"High"},
+    {"category":"Entity optimization","action":"Include entity-rich descriptions","impact":"Medium"},
+    {"category":"Citation proofing","action":"Add inline citations to claims","impact":"High"}
+  ]
+}` },
+          { role: "user", content: `Analyze this content for SEO and AI citation readiness:\n\n${contentToAnalyze}` }
+        ],
+        stream: false,
+        options: { temperature: 0.7, num_ctx: 4096 }
+      })
+    });
+
+    const data = await response.json();
+    const content = data.message?.content || "{}";
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const result = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+      res.json(result);
+    } catch {
+      res.status(500).json({ error: "Failed to parse AI response" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "Ollama unreachable" });
+  }
+});

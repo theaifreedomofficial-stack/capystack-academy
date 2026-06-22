@@ -256,7 +256,7 @@ export default function MapsScraperTab() {
               >
                 {loading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin text-slate-950" />
+                    <Loader2 className="h-4 w-4 animate-spin text-slate-950" /> AI is analyzing leads... (15-30 sec)
                     <span>Pulling Maps Listings...</span>
                   </>
                 ) : (

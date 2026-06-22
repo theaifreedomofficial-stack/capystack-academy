@@ -171,10 +171,10 @@ export default function MapsScraperTab() {
         <div className="relative space-y-2 z-10">
           <div className="flex items-center gap-2">
             <span className="text-[10px] bg-emerald-900/50 text-emerald-300 border border-emerald-800/40 px-2 py-0.5 rounded uppercase font-mono font-bold">
-              Mike Futia Blueprint
+              AI FREEDOM ENGINE
             </span>
             <span className="text-xs text-sky-400 font-mono tracking-widest font-semibold uppercase">
-              VIBE-CODED Claude Maps Extraction Node
+              AI-POWERED MAPS EXTRACTION NODE
             </span>
           </div>
           <h2 className="text-xl font-black text-white">

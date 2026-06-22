@@ -431,6 +431,9 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
 
           {activeTab === "sales" && (
             <SalesLandingTab />
+            )}
+            {activeTab === "maps" && (
+              <MapsScraperTab />
           )}
         </div>
 

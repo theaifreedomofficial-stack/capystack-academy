@@ -165,3 +165,121 @@ app.post("/api/score-geo-seo", async (req, res) => {
     res.status(500).json({ error: "Ollama unreachable" });
   }
 });
+
+// =============================================
+// ENDPOINT 5: Competitor Analysis
+// =============================================
+app.post("/api/analyze-competitor", async (req, res) => {
+  const { contentToAnalyze } = req.body;
+  if (!contentToAnalyze) return res.status(400).json({ error: "contentToAnalyze required" });
+
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: [
+          { role: "system", content: "You are an AI citation and competitor analysis engine. Analyze the given brand or topic for AI search presence and traditional SEO. Return ONLY valid JSON, no markdown, no explanation: {\"competitor\":\"name\",\"industry\":\"detected\",\"seoScore\":0-100,\"geoScore\":0-100,\"brandMentions\":[{\"platform\":\"ChatGPT\",\"mentioned\":true,\"context\":\"how they appear\"}],\"citationContexts\":[\"context1\"],\"competitorCitations\":[{\"competitor\":\"name\",\"citationCount\":5,\"strength\":\"strong\"}],\"gapOpportunities\":[\"gap1\",\"gap2\"],\"authorityScore\":0-100,\"recommendations\":[\"action1\",\"action2\"]}" },
+          { role: "user", content: `Analyze this for AI search presence and competitive positioning: "${contentToAnalyze}". Return ONLY the JSON object.` }
+        ],
+        stream: false,
+        options: { temperature: 0.7, num_ctx: 8192 }
+      })
+    });
+    if (!response.ok) { const error = await response.text(); return res.status(500).json({ error: "Ollama error: " + error }); }
+    const data = await response.json();
+    const content = data.message?.content || "{}";
+    try { const jsonMatch = content.match(/\{[\s\S]*\}/); const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {}; res.json(result); } catch { res.json({}); }
+  } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
+});
+
+// =============================================
+// ENDPOINT 6: Content Repurpose (Publisher)
+// =============================================
+app.post("/api/repurpose-content", async (req, res) => {
+  const { originalText, coreTopic, brandProfile } = req.body;
+  if (!originalText) return res.status(400).json({ error: "originalText required" });
+
+  const brandCtx = brandProfile ? `Brand: ${brandProfile.brandName || ""}. Voice: ${brandProfile.brandVoice || "professional"}. Audience: ${brandProfile.targetAudience || "general"}.` : "Use a professional, engaging tone.";
+
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: [
+          { role: "system", content: `You are a content strategist who repurposes content for multiple platforms. ${brandCtx} Return ONLY valid JSON, no markdown, no explanation: {"coreTopic":"topic","posts":[{"platform":"Twitter/X","content":"post text","hashtags":["tag1","tag2"],"bestTime":"9:00 AM EST","contentType":"thread","characterCount":280},{"platform":"LinkedIn","content":"post text","hashtags":["tag1"],"bestTime":"8:00 AM EST","contentType":"post","characterCount":1300},{"platform":"Instagram","content":"caption","hashtags":["tag1","tag2","tag3"],"bestTime":"12:00 PM EST","contentType":"carousel","characterCount":2200},{"platform":"TikTok","content":"hook + script","hashtags":["tag1"],"bestTime":"7:00 PM EST","contentType":"video script","characterCount":300},{"platform":"Email Newsletter","content":"subject + body","hashtags":[],"bestTime":"Tuesday 10 AM","contentType":"newsletter","characterCount":500}]}` },
+          { role: "user", content: `Repurpose this content for all major platforms. Core topic: "${coreTopic || "general"}". Original content: "${originalText}". Return ONLY the JSON object.` }
+        ],
+        stream: false,
+        options: { temperature: 0.8, num_ctx: 8192 }
+      })
+    });
+    if (!response.ok) { const error = await response.text(); return res.status(500).json({ error: "Ollama error: " + error }); }
+    const data = await response.json();
+    const content = data.message?.content || "{}";
+    try { const jsonMatch = content.match(/\{[\s\S]*\}/); const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {}; res.json(result); } catch { res.json({}); }
+  } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
+});
+
+// =============================================
+// ENDPOINT 7: AI Website Generator (Builder)
+// =============================================
+app.post("/api/generate-website", async (req, res) => {
+  const { brandProfile, niche } = req.body;
+  if (!niche && !brandProfile) return res.status(400).json({ error: "niche or brandProfile required" });
+
+  const brandCtx = brandProfile ? `Brand: ${brandProfile.brandName || ""}. Voice: ${brandProfile.brandVoice || "professional"}. Colors: ${brandProfile.brandColors || "modern blue"}.` : "";
+
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: [
+          { role: "system", content: `You are an AI website architect. ${brandCtx} Generate a complete website template. Return ONLY valid JSON, no markdown, no explanation: {"siteName":"name","niche":"niche","tagline":"tagline","colorScheme":{"primary":"#hex","secondary":"#hex","accent":"#hex","background":"#hex","text":"#hex"},"pages":[{"name":"Home","slug":"/","sections":[{"type":"hero","headline":"text","subheadline":"text","ctaText":"Get Started","ctaLink":"#contact"},{"type":"features","headline":"Why Choose Us","items":[{"title":"F1","description":"desc","icon":"star"},{"title":"F2","description":"desc","icon":"shield"},{"title":"F3","description":"desc","icon":"zap"}]},{"type":"testimonials","headline":"What Clients Say","items":[{"name":"Client","role":"Title","quote":"text","rating":5}]},{"type":"cta","headline":"Ready?","subheadline":"Contact us","ctaText":"Book a Call","ctaLink":"#contact"}]}],"seoMeta":{"title":"SEO title","description":"meta desc","keywords":["kw1","kw2"]}}` },
+          { role: "user", content: `Generate a complete website template for the "${niche || "consulting"}" niche. Make it conversion-optimized. Return ONLY the JSON object.` }
+        ],
+        stream: false,
+        options: { temperature: 0.8, num_ctx: 8192 }
+      })
+    });
+    if (!response.ok) { const error = await response.text(); return res.status(500).json({ error: "Ollama error: " + error }); }
+    const data = await response.json();
+    const content = data.message?.content || "{}";
+    try { const jsonMatch = content.match(/\{[\s\S]*\}/); const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {}; res.json(result); } catch { res.json({}); }
+  } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
+});
+
+// =============================================
+// ENDPOINT 8: Social Lead Prospector
+// =============================================
+app.post("/api/scrape-leads", async (req, res) => {
+  const { keywords, platformFilter } = req.body;
+  if (!keywords) return res.status(400).json({ error: "keywords required" });
+
+  const platInst = platformFilter ? `Focus on "${platformFilter}" platform.` : "Cover LinkedIn, Twitter/X, Instagram, TikTok, and YouTube.";
+
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: [
+          { role: "system", content: `You are a social media lead prospector. ${platInst} Return ONLY a valid JSON array, no markdown, no explanation. Each object must have exactly these fields: platform (string), handle (string), displayName (string), bio (string), followers (number), engagementLevel (string: high/medium/low), contentThemes (array of strings), outreachAngle (string), priority (number 1-10), profileUrl (string).` },
+          { role: "user", content: `Find 8 social media lead prospects for: "${keywords}". ${platInst} Return ONLY the JSON array.` }
+        ],
+        stream: false,
+        options: { temperature: 0.8, num_ctx: 4096 }
+      })
+    });
+    if (!response.ok) { const error = await response.text(); return res.status(500).json({ error: "Ollama error: " + error }); }
+    const data = await response.json();
+    const content = data.message?.content || "[]";
+    try { const jsonMatch = content.match(/\[[\s\S]*\]/); const leads = jsonMatch ? JSON.parse(jsonMatch[0]) : []; res.json(leads); } catch { res.json([]); }
+  } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
+});

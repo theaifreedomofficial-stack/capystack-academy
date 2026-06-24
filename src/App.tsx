@@ -10,7 +10,6 @@ import PricingTab from "./components/PricingTab";
 import MapsScraperTab from "./components/MapsScraperTab";
 import AcademyTab from "./components/AcademyTab";
 import InteractiveCourseTab from "./components/InteractiveCourseTab";
-import SalesLandingTab from "./components/SalesLandingTab";
 import { CompetitorAnalysis, GEOSEOScoreResult, RepurposeResult, BrandProfile } from "./types";
 import { Sparkles, Terminal, Info, BarChart3, HelpCircle, AlertCircle } from "lucide-react";
 

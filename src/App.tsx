@@ -30,8 +30,6 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">Loading...</div>;
-  if (!session) return <AuthPage onAuth={() => {}} />;
 
   const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "course">("competitor");
 
@@ -238,6 +236,9 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
     };
     setBrandProfile(sampleBrand);
   };
+
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">Loading...</div>;
+  if (!session) return <AuthPage onAuth={() => {}} />;
 
   return (
     <div id="app-root-container" className="min-h-screen bg-slate-950 font-sans antialiased text-slate-100 flex flex-col">

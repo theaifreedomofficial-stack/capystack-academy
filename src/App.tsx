@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AuthPage from "./components/AuthPage";
+import { supabase } from "./lib/supabase";
 import Header from "./components/Header";
 import CompetitorTab from "./components/CompetitorTab";
 import ScorecardTab from "./components/ScorecardTab";
@@ -14,6 +16,23 @@ import { CompetitorAnalysis, GEOSEOScoreResult, RepurposeResult, BrandProfile } 
 import { Sparkles, Terminal, Info, BarChart3, HelpCircle, AlertCircle } from "lucide-react";
 
 export default function App() {
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">Loading...</div>;
+  if (!session) return <AuthPage onAuth={() => {}} />;
+
   const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "course">("competitor");
 
   // State to hold cached runs for seamless UX and pre-populated demos

@@ -283,3 +283,35 @@ app.post("/api/scrape-leads", async (req, res) => {
     try { const jsonMatch = content.match(/\[[\s\S]*\]/); const leads = jsonMatch ? JSON.parse(jsonMatch[0]) : []; res.json(leads); } catch { res.json([]); }
   } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
 });
+
+// Stripe Checkout Session
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-11-20.acacia" });
+
+app.post("/api/stripe/create-checkout-session", async (req: any, res: any) => {
+  const { planName, priceAmount, billingPeriod } = req.body;
+  if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === "") {
+    return res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
+  }
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "subscription",
+      line_items: [{
+        price_data: {
+          currency: "usd",
+          product_data: { name: planName },
+          unit_amount: priceAmount * 100,
+          recurring: { interval: billingPeriod === "yearly" ? "year" : "month" }
+        },
+        quantity: 1
+      }],
+      success_url: `${process.env.APP_URL}?payment=success`,
+      cancel_url: `${process.env.APP_URL}?payment=cancelled`
+    });
+    res.json({ simulated: false, checkoutUrl: session.url, planName, priceAmount });
+  } catch (err: any) {
+    console.error("Stripe error:", err.message);
+    res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
+  }
+});

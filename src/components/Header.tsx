@@ -26,9 +26,7 @@ export default function Header() {
                 className="relative h-20 w-20 rounded-full border-2 border-slate-900 object-cover shadow-2xl"
                 referrerPolicy="no-referrer"
               />
-              <span className="absolute -bottom-1 -right-1 bg-amber-500 text-slate-950 text-[9px] px-1.5 py-0.5 rounded-full font-black font-mono tracking-tighter uppercase whitespace-nowrap shadow-md">
-                CAPY ACTIVE 🐾
-              </span>
+              
             </div>
 
             <div>

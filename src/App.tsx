@@ -53,7 +53,7 @@ export default function App() {
 
   // API Trigger wrappers
   const handleCompetitorAnalyze = async (urlOrTopic: string, industry: string): Promise<CompetitorAnalysis | null> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/analyze-competitor", {
+    const response = await fetch((import.meta.env.VITE_API_URL || "") + "/api/analyze-competitor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ urlOrTopic, industry }),
@@ -67,7 +67,7 @@ export default function App() {
   };
 
   const handleScoreCopy = async (contentToAnalyze: string): Promise<GEOSEOScoreResult | null> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/score-geo-seo", {
+    const response = await fetch((import.meta.env.VITE_API_URL || "") + "/api/score-geo-seo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contentToAnalyze }),
@@ -81,7 +81,7 @@ export default function App() {
   };
 
   const handleContentRepurpose = async (originalText: string, coreTopic: string, profileVal?: BrandProfile | null): Promise<RepurposeResult | null> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/repurpose-content", {
+    const response = await fetch((import.meta.env.VITE_API_URL || "") + "/api/repurpose-content", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ originalText, coreTopic, brandProfile: profileVal }),

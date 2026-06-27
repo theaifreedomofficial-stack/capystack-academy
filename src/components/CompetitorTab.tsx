@@ -151,7 +151,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
               <p className="text-[11px] text-slate-500">Platforms where this competitor is heavily quoted by search LLMs:</p>
 
               <div className="space-y-2">
-                {result.aiCitations.map((citation, index) => (
+                {(result.aiCitations ?? []).map((citation, index) => (
                   <div key={index} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950 border border-slate-900">
                     <div className="truncate pr-1">
                       <span className="text-[10px] uppercase font-mono text-slate-400 block tracking-wide">
@@ -189,7 +189,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
                   <span>Key Citation Strengths</span>
                 </div>
                 <ul className="mt-2.5 space-y-1.5 text-xs text-slate-300 leading-normal pl-4 list-disc">
-                  {result.strengths.map((s, i) => (
+                  {(result.strengths ?? []).map((s, i) => (
                     <li key={i}>{s}</li>
                   ))}
                 </ul>
@@ -201,7 +201,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
                   <span>Authority Vulnerabilities</span>
                 </div>
                 <ul className="mt-2.5 space-y-1.5 text-xs text-slate-300 leading-normal pl-4 list-disc">
-                  {result.weaknesses.map((w, i) => (
+                  {(result.weaknesses ?? []).map((w, i) => (
                     <li key={i}>{w}</li>
                   ))}
                 </ul>
@@ -228,7 +228,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-900">
-                    {result.topKeywords.map((kw, i) => (
+                    {(result.topKeywords ?? []).map((kw, i) => (
                       <tr key={i} className="hover:bg-slate-900/30">
                         <td className="py-2.5 px-4 font-medium text-slate-200">{kw.keyword}</td>
                         <td className="py-2.5 px-4 font-mono">{kw.trafficVolume}</td>
@@ -257,7 +257,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
                 ⚡ Citation-Hijack Action Blueprints
               </h4>
               <div className="grid grid-cols-1 gap-3">
-                {result.geoOpportunities.map((op, i) => (
+                {(result.geoOpportunities ?? []).map((op, i) => (
                   <div key={i} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500/20 transition flex gap-3">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-[10px] font-bold text-emerald-400">
                       {i + 1}

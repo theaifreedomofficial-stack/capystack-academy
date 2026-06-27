@@ -59,7 +59,7 @@ export default function App() {
       body: JSON.stringify({ urlOrTopic, industry }),
     });
     if (!response.ok) {
-      throw new Error(`Server returned error status ${response.status}`);
+      throw new Error('Server returned error status ' + response.status);
     }
     const data = await response.json();
     setCompetitorCache(data);
@@ -73,7 +73,7 @@ export default function App() {
       body: JSON.stringify({ contentToAnalyze }),
     });
     if (!response.ok) {
-      throw new Error(`Server returned error status ${response.status}`);
+      throw new Error('Server returned error status ' + response.status);
     }
     const data = await response.json();
     setScorecardCache(data);
@@ -87,7 +87,7 @@ export default function App() {
       body: JSON.stringify({ originalText, coreTopic, brandProfile: profileVal }),
     });
     if (!response.ok) {
-      throw new Error(`Server returned error status ${response.status}`);
+      throw new Error('Server returned error status ' + response.status);
     }
     const data = await response.json();
     setPublisherCache(data);

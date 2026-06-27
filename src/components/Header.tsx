@@ -6,7 +6,7 @@ export default function Header() {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
-  const logoImg = "/src/assets/images/capystack_logo_1781831134736.jpg";
+  const logoImg = "https://i.imgur.com/pxLNBDg.jpeg";
 
   return (
     <header id="app-header" className="border-b border-slate-800 bg-slate-950 px-6 py-6 text-white relative overflow-hidden">

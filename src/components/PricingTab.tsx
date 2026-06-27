@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 export default function PricingTab() {
-  const logoImg = "/src/assets/images/capystack_logo_1781831134736.jpg";
+  const logoImg = "https://i.imgur.com/pxLNBDg.jpeg";
   
   // Tabs: "landing" = Public Marketing Landing Page, "strategy" = B2B Scaling Blueprints & GPU Calculator
   const [currentSubTab, setCurrentSubTab] = useState<"landing" | "strategy">("landing");
@@ -329,7 +329,7 @@ export default function PricingTab() {
               <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 opacity-60 blur group-hover:opacity-100 transition duration-1000 animate-pulse" />
               <img 
                 src={logoImg} 
-                alt="CapyStack AI Mascot" 
+                alt="" 
                 className="relative h-24 w-24 rounded-full border-4 border-slate-950 object-cover shadow-2xl"
                 referrerPolicy="no-referrer"
               />

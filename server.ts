@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import { createServer as createViteServer } from "vite";
 
 dotenv.config({ path: ".env.local" });
 
@@ -61,16 +60,37 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-async function startServer() {
-  const vite = await createViteServer({ server: { middlewareMode: true }, appType: "spa" });
-  app.use(vite.middlewares);
-  const PORT = parseInt(process.env.PORT || "3000");
+function startServer() {
+  const PORT = parseInt(process.env.PORT || "3001");
   app.listen(PORT, () => {
-    console.log("\n🚀 CapyStack AI running at http://localhost:" + PORT);
-    console.log("🦙 Ollama backend: " + OLLAMA_BASE_URL);
-    console.log("🧠 Model: " + OLLAMA_MODEL + "\n");
+    console.log("CapyStack AI running at http://localhost:" + PORT);
   });
 }
+
+
+// Stripe Checkout
+const Stripe = require("stripe");
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-11-20.acacia" });
+
+app.post("/api/stripe/create-checkout-session", async (req: any, res: any) => {
+  const { planName, priceAmount, billingPeriod } = req.body;
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
+  }
+  try {
+    const session = await stripeClient.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "subscription",
+      line_items: [{ price_data: { currency: "usd", product_data: { name: planName }, unit_amount: priceAmount * 100, recurring: { interval: billingPeriod === "yearly" ? "year" : "month" } }, quantity: 1 }],
+      success_url: `${process.env.APP_URL}?payment=success`,
+      cancel_url: `${process.env.APP_URL}?payment=cancelled`
+    });
+    res.json({ simulated: false, checkoutUrl: session.url, planName, priceAmount });
+  } catch (err: any) {
+    console.error("Stripe error:", err.message);
+    res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
+  }
+});
 
 startServer();
 
@@ -282,36 +302,4 @@ app.post("/api/scrape-leads", async (req, res) => {
     const content = data.message?.content || "[]";
     try { const jsonMatch = content.match(/\[[\s\S]*\]/); const leads = jsonMatch ? JSON.parse(jsonMatch[0]) : []; res.json(leads); } catch { res.json([]); }
   } catch (error: any) { res.status(500).json({ error: "Ollama unreachable" }); }
-});
-
-// Stripe Checkout Session
-import Stripe from "stripe";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-11-20.acacia" });
-
-app.post("/api/stripe/create-checkout-session", async (req: any, res: any) => {
-  const { planName, priceAmount, billingPeriod } = req.body;
-  if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === "") {
-    return res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
-  }
-  try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "subscription",
-      line_items: [{
-        price_data: {
-          currency: "usd",
-          product_data: { name: planName },
-          unit_amount: priceAmount * 100,
-          recurring: { interval: billingPeriod === "yearly" ? "year" : "month" }
-        },
-        quantity: 1
-      }],
-      success_url: `${process.env.APP_URL}?payment=success`,
-      cancel_url: `${process.env.APP_URL}?payment=cancelled`
-    });
-    res.json({ simulated: false, checkoutUrl: session.url, planName, priceAmount });
-  } catch (err: any) {
-    console.error("Stripe error:", err.message);
-    res.json({ simulated: true, checkoutUrl: "", planName, priceAmount });
-  }
 });

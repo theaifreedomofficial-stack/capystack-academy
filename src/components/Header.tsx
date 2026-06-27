@@ -62,11 +62,6 @@ export default function Header() {
               <span className="text-slate-300">GEO Node: Ready</span>
             </div>
 
-            <div className="flex items-center gap-2 rounded-xl bg-indigo-950/40 border border-indigo-900/50 px-3.5 py-2 text-xs text-indigo-300 animate-pulse">
-              <Server className="h-4 w-4" />
-              <span>Webhooks, API &amp; MCP Academy</span>
-            </div>
-          </div>
         </div>
 
         {/* Education Highlight Board */}

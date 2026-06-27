@@ -346,7 +346,7 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
               }`}
             >
               <span>💳</span>
-              <span>Pricing & Strategy</span>
+              <span>Plans & Pricing</span>
             </button>
 
             <button

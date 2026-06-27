@@ -1,6 +1,11 @@
-import { Sparkles, ArrowUpRight, HelpCircle, Flame, Server, ShieldCheck, Coins } from "lucide-react";
+import { Sparkles, ArrowUpRight, HelpCircle, Flame, Server, ShieldCheck, Coins, LogOut } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 export default function Header() {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
   const logoImg = "/src/assets/images/capystack_logo_1781831134736.jpg";
 
   return (
@@ -104,6 +109,15 @@ export default function Header() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute top-4 right-4 z-20">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 text-sm transition-all"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </button>
       </div>
     </header>
   );

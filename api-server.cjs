@@ -56,4 +56,30 @@ app.post('/api/stripe/create-checkout-session', async (req, res) => {
   } catch (err) { res.json({ simulated: true, checkoutUrl: '', error: err.message }); }
 });
 
+// ── Social Media Agent proxy ─────────────────────────────────────────────────
+// Forwards /api/social/* to the Python FastAPI service on port 5001
+const SOCIAL_AGENT_URL = process.env.SOCIAL_AGENT_URL || 'http://localhost:5001';
+
+app.all('/api/social/*', async (req, res) => {
+  const targetPath = req.originalUrl; // keeps query params
+  const targetUrl = SOCIAL_AGENT_URL + targetPath;
+  try {
+    const fetchResp = await axios({
+      method: req.method,
+      url: targetUrl,
+      data: ['GET', 'HEAD'].includes(req.method) ? undefined : req.body,
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 300000,
+      responseType: 'arraybuffer',
+      validateStatus: () => true,
+    });
+    res.status(fetchResp.status);
+    const ct = fetchResp.headers['content-type'] || 'application/json';
+    res.setHeader('Content-Type', ct);
+    res.send(fetchResp.data);
+  } catch (err) {
+    res.status(502).json({ error: 'Social agent unavailable', detail: err.message });
+  }
+});
+
 app.listen(3005, () => console.log('API on 3005'));

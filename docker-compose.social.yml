@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Social Media Content Agent — add-on to docker-compose.yml
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.social.yml up -d
+#
+# Or append these services to your main docker-compose.yml
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── Social Media Agent API (FastAPI + CrewAI + APScheduler) ───────────────
+  social-agent:
+    build:
+      context: ./social_agent
+      dockerfile: Dockerfile
+    container_name: social-agent
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    volumes:
+      - social_agent_data:/app/data
+    environment:
+      # LLM via LiteLLM proxy (Ollama models — no OpenAI needed)
+      - LITELLM_URL=http://litellm:4000
+      - LITELLM_KEY=${LITELLM_MASTER_KEY:-your-litellm-master-key}
+      - LLM_MODEL=qwen3-14b
+      - LLM_FAST_MODEL=qwen3-7b
+
+      # Vector memory
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_COLLECTION=social_trends
+
+      # ComfyUI (optional — set COMFYUI_ENABLED=false to skip image gen)
+      - COMFYUI_URL=http://comfyui:8188
+      - COMFYUI_ENABLED=true
+
+      # Activepieces webhook for posting after approval
+      # Set to your Activepieces HTTP trigger URL
+      - ACTIVEPIECES_SOCIAL_WEBHOOK=${ACTIVEPIECES_SOCIAL_WEBHOOK:-}
+
+      # Scheduler
+      - SCHEDULE_HOUR=8
+
+      # Data
+      - DATA_DIR=/app/data
+    depends_on:
+      - litellm
+      - qdrant
+    networks:
+      - agency_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/social/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  social_agent_data:
+
+networks:
+  agency_net:
+    external: true   # Defined in docker-compose.yml — all services share this network
+    name: capystack_default

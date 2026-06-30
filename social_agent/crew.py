@@ -67,46 +67,80 @@ def _extract_json(text: str) -> Optional[dict]:
 # ─── Fallback (no CrewAI) ────────────────────────────────────────────────────
 
 def _ollama_fallback(niche: str, platforms: list, brand_voice: str) -> dict:
-    """Single-shot Ollama call when CrewAI isn't installed."""
+    """Single-shot LiteLLM call when CrewAI isn't installed."""
     import httpx
-    platform_str = ", ".join(platforms)
-    prompt = f"""
-Write a complete social media content package for the niche: "{niche}".
+
+    platform_set = {p.lower().strip() for p in platforms}
+    platform_str = ", ".join(sorted(platform_set))
+
+    # Build the content spec and best_post_times only for requested platforms
+    content_spec_lines = []
+    times_pairs = []
+    engagement_pairs = []
+    if "linkedin" in platform_set:
+        content_spec_lines.append(
+            '"linkedin": "150-250 word post with hook on line 1, 3 bullet points, one data point, CTA, 3-5 hashtags"'
+        )
+        times_pairs.append('"linkedin": "Tuesday/Thursday 9-10am"')
+        engagement_pairs.append('"linkedin": "High"')
+    if any(p in platform_set for p in ("twitter", "x", "x/twitter")):
+        content_spec_lines.append(
+            '"twitter": ["Tweet 1 hook <280 chars", "Tweet 2", "Tweet 3", "Tweet 4", "Tweet 5 CTA + retweet ask"]'
+        )
+        times_pairs.append('"twitter": "12pm-1pm weekdays"')
+        engagement_pairs.append('"twitter": "Medium"')
+    if "instagram" in platform_set:
+        content_spec_lines.append(
+            '"instagram": "180-220 word caption with 3 emojis in first line, storytelling arc, CTA, 25 hashtags"'
+        )
+        times_pairs.append('"instagram": "7-9pm"')
+        engagement_pairs.append('"instagram": "High"')
+
+    content_spec = "{\n    " + ",\n    ".join(content_spec_lines) + "\n  }"
+    times_spec = "{" + ", ".join(times_pairs) + "}"
+    engagement_spec = "{" + ", ".join(engagement_pairs) + "}"
+
+    prompt = f"""You are an expert social media content creator. Write a complete content package for:
+Niche: "{niche}"
 Brand voice: {brand_voice}
 Platforms: {platform_str}
 
-Return ONLY valid JSON in this exact format:
+Return ONLY a valid JSON object — no markdown fences, no explanation, no preamble:
 {{
-  "research_summary": "3 key trends for this niche right now",
-  "content": {{
-    "linkedin": "Full LinkedIn post 150-250 words with hook, bullets, CTA, hashtags",
-    "twitter": ["Tweet 1 hook", "Tweet 2", "Tweet 3", "Tweet 4", "Tweet 5 CTA"],
-    "instagram": "Instagram caption with emojis, 200 words, hashtags"
-  }},
+  "research_summary": "3 sentences covering the top trend angle for {niche} right now",
+  "content": {content_spec},
   "image_prompts": [
-    {{"style": "photorealistic", "prompt": "detailed prompt", "negative_prompt": "blurry text", "width": 1024, "height": 1024}},
-    {{"style": "infographic", "prompt": "detailed prompt", "negative_prompt": "ugly", "width": 1200, "height": 628}},
-    {{"style": "bold type", "prompt": "detailed prompt", "negative_prompt": "faces people", "width": 1080, "height": 1080}}
+    {{"style": "photorealistic", "prompt": "professional scene related to {niche}, natural lighting, cinematic", "negative_prompt": "blurry, low quality, text, watermark", "width": 1024, "height": 1024}},
+    {{"style": "infographic", "prompt": "clean flat design infographic about {niche}, brand colors, minimal", "negative_prompt": "ugly, cluttered, photos", "width": 1200, "height": 628}},
+    {{"style": "bold graphic", "prompt": "bold typographic social post about {niche}, high contrast, modern", "negative_prompt": "faces, people, realistic", "width": 1080, "height": 1080}}
   ],
-  "best_post_times": {{"linkedin": "Tuesday 10am", "twitter": "12pm–1pm", "instagram": "7pm–9pm"}},
-  "estimated_engagement": {{"linkedin": "High", "twitter": "Medium", "instagram": "High"}},
-  "approval_notes": "Content ready. Review tone and update any brand-specific details."
-}}
-"""
+  "best_post_times": {times_spec},
+  "estimated_engagement": {engagement_spec},
+  "hooks_used": ["Hook 1 used in content", "Hook 2 used"],
+  "approval_notes": "Review all content for brand alignment. Update any specific stats with real data."
+}}"""
+
     try:
         resp = httpx.post(
             f"{LITELLM_URL}/v1/chat/completions",
             headers={"Authorization": f"Bearer {LITELLM_KEY}", "Content-Type": "application/json"},
-            json={"model": LLM_FAST_MODEL, "messages": [{"role": "user", "content": prompt}]},
-            timeout=180,
+            json={
+                "model": LLM_MODEL,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7,
+            },
+            timeout=240,
         )
+        resp.raise_for_status()
         raw = resp.json()["choices"][0]["message"]["content"]
         parsed = _extract_json(raw)
         if parsed:
+            logger.info("Fallback generation parsed successfully")
             return parsed
-        # Return raw wrapped
-        return {"raw_output": raw, "error": "Could not parse JSON from LLM"}
+        return {"raw_output": raw, "content": {"raw": raw[:3000]},
+                "approval_notes": "JSON parsing failed — review raw content above."}
     except Exception as e:
+        logger.error(f"Fallback generation error: {e}")
         return {"error": str(e)}
 
 
@@ -282,7 +316,7 @@ Output ONLY the JSON object — no markdown, no preamble.
         agents=[researcher, writer, visual_director, reviewer],
         tasks=[research_task, content_task, visual_task, review_task],
         process=Process.sequential,
-        verbose=2,
+        verbose=True,
     )
 
     try:

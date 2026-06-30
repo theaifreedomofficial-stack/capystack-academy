@@ -11,7 +11,7 @@ import urllib.request
 import urllib.parse
 from typing import Optional
 
-from config import COMFYUI_URL, COMFYUI_ENABLED, IMAGES_DIR, logger
+from config import COMFYUI_URL, COMFYUI_ENABLED, COMFYUI_CHECKPOINT, IMAGES_DIR, logger
 
 
 def _build_txt2img_workflow(prompt: str, negative_prompt: str,
@@ -37,7 +37,7 @@ def _build_txt2img_workflow(prompt: str, negative_prompt: str,
             },
             "4": {
                 "class_type": "CheckpointLoaderSimple",
-                "inputs": {"ckpt_name": "sd_xl_base_1.0.safetensors"}
+                "inputs": {"ckpt_name": COMFYUI_CHECKPOINT}
             },
             "5": {
                 "class_type": "EmptyLatentImage",

@@ -36,6 +36,8 @@ services:
       # ComfyUI (optional — set COMFYUI_ENABLED=false to skip image gen)
       - COMFYUI_URL=http://comfyui:8188
       - COMFYUI_ENABLED=true
+      # Checkpoint filename in ComfyUI's models/checkpoints/ folder
+      - COMFYUI_CHECKPOINT=${COMFYUI_CHECKPOINT:-sd_xl_base_1.0.safetensors}
 
       # Activepieces webhook for posting after approval
       # Set to your Activepieces HTTP trigger URL

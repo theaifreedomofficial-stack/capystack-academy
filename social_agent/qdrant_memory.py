@@ -43,7 +43,9 @@ def _get_client() -> Optional["QdrantClient"]:
 def _embed(text: str) -> list[float]:
     """Embed text using Ollama nomic-embed-text."""
     resp = ollama_sdk.embeddings(model=EMBED_MODEL, prompt=text[:2000])
-    return resp["embedding"]
+    # ollama>=0.3 returns EmbeddingResponse (Pydantic); older versions return a plain dict
+    emb = resp.embedding if hasattr(resp, "embedding") else resp["embedding"]
+    return list(emb)
 
 
 def store_trend(niche: str, research_summary: str):

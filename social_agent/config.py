@@ -21,6 +21,8 @@ QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "social_trends")
 # ── ComfyUI ───────────────────────────────────────────────────────────────────
 COMFYUI_URL = os.getenv("COMFYUI_URL", "http://comfyui:8188")
 COMFYUI_ENABLED = os.getenv("COMFYUI_ENABLED", "true").lower() == "true"
+# Model checkpoint filename as it appears in ComfyUI's models/checkpoints/ folder
+COMFYUI_CHECKPOINT = os.getenv("COMFYUI_CHECKPOINT", "sd_xl_base_1.0.safetensors")
 
 # ── Activepieces ──────────────────────────────────────────────────────────────
 ACTIVEPIECES_WEBHOOK = os.getenv("ACTIVEPIECES_SOCIAL_WEBHOOK", "")

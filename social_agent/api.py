@@ -1,18 +1,26 @@
 """
 Social Media Agent API — FastAPI server.
 
-Endpoints:
+Campaigns:
   POST   /api/social/campaigns            Create campaign + trigger first run
   GET    /api/social/campaigns            List all campaigns
-  PATCH  /api/social/campaigns/{id}       Pause / resume / update
-  POST   /api/social/campaigns/{id}/run   Trigger immediate run
+  GET    /api/social/campaigns/{id}       Get single campaign
+  PATCH  /api/social/campaigns/{id}       Pause / resume / update frequency
+  DELETE /api/social/campaigns/{id}       Delete campaign + all associated data
+  POST   /api/social/campaigns/{id}/run   Trigger immediate content run
+
+Jobs:
   GET    /api/social/jobs                 List jobs (filter by campaign/status)
   GET    /api/social/jobs/{id}            Get single job with full content
-  POST   /api/social/jobs/{id}/approve    Human approval gate
+  POST   /api/social/jobs/{id}/approve    Human approval gate (approve/reject/regenerate)
+  POST   /api/social/jobs/{id}/retry      Retry a failed (error-status) job
   POST   /api/social/jobs/{id}/images     Trigger ComfyUI image generation
-  GET    /api/social/jobs/{id}/logs       Agent run logs
+  GET    /api/social/jobs/{id}/logs       Agent run logs for a job
+
+Monitoring:
+  GET    /api/social/openwebui/summary    Status summary for Open WebUI function calling
   GET    /api/social/images/{filename}    Serve generated images
-  GET    /api/social/health               Health check
+  GET    /api/social/health               Health + scheduler status
 """
 import json
 import os

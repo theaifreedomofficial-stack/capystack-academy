@@ -12,6 +12,7 @@ import PricingTab from "./components/PricingTab";
 import MapsScraperTab from "./components/MapsScraperTab";
 import AcademyTab from "./components/AcademyTab";
 import InteractiveCourseTab from "./components/InteractiveCourseTab";
+import AgencySetupGuideTab from "./components/AgencySetupGuideTab";
 import { CompetitorAnalysis, GEOSEOScoreResult, RepurposeResult, BrandProfile } from "./types";
 import { Sparkles, Terminal, Info, BarChart3, HelpCircle, AlertCircle } from "lucide-react";
 
@@ -31,7 +32,7 @@ export default function App() {
   }, []);
 
 
-  const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "course">("competitor");
+  const [activeTab, setActiveTab] = useState<"competitor" | "scorecard" | "publisher" | "builder" | "prospector" | "devcenter" | "pricing" | "maps" | "course" | "agency-guide">("competitor");
 
   // State to hold cached runs for seamless UX and pre-populated demos
   const [competitorCache, setCompetitorCache] = useState<CompetitorAnalysis | null>(null);
@@ -361,6 +362,18 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
               <span>Academy Masterclass & Course</span>
             </button>
 
+            <button
+              onClick={() => setActiveTab("agency-guide")}
+              className={`px-4.5 py-2.5 text-sm font-semibold rounded-xl flex items-center gap-2 transition-all ${
+                activeTab === "agency-guide"
+                  ? "bg-gradient-to-r from-cyan-500 to-indigo-500 text-slate-950 font-bold shadow-lg shadow-cyan-500/10"
+                  : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800/80"
+              }`}
+            >
+              <span>🤖</span>
+              <span>AI Agency Setup Guide</span>
+            </button>
+
           </div>
 
           {/* Quick Demo Prepopulator button */}
@@ -424,6 +437,10 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
 
           {activeTab === "course" && (
             <InteractiveCourseTab />
+          )}
+
+          {activeTab === "agency-guide" && (
+            <AgencySetupGuideTab />
           )}
 
             {activeTab === "maps" && (

@@ -130,12 +130,67 @@ app.post("/api/scrape-maps-leads", async (req, res) => {
   }
 });
 
+function normalizeScorecard(raw: any, input: string) {
+  const clamp = (n: any, def = 50) =>
+    typeof n === "number" && n >= 0 && n <= 100 ? Math.round(n) : def;
+
+  const validViability = ["Strong Citation", "Moderate Citation", "Low Citation"];
+  const validCategories = ["Structured Data", "Authoritativeness", "Entity optimization", "Citation proofing"];
+  const validImpacts = ["Critical", "High", "Medium"];
+
+  const defaultPlatforms = [
+    { platform: "ChatGPT",   citationProbability: 50, viabilityStatus: "Moderate Citation" },
+    { platform: "Perplexity", citationProbability: 50, viabilityStatus: "Moderate Citation" },
+    { platform: "Claude",    citationProbability: 50, viabilityStatus: "Moderate Citation" },
+    { platform: "Gemini",    citationProbability: 50, viabilityStatus: "Moderate Citation" },
+  ];
+
+  const metrics = raw.metrics || {};
+  const aiPlatforms: any[] = Array.isArray(raw.aiPlatformsScore) ? raw.aiPlatformsScore : [];
+  const actions: any[] = Array.isArray(raw.geoBoostActions) ? raw.geoBoostActions : [];
+
+  return {
+    urlOrContent: raw.urlOrContent || input,
+    traditionalSeoScore: clamp(raw.traditionalSeoScore),
+    geoScore: clamp(raw.geoScore),
+    overallGrade: typeof raw.overallGrade === "string" ? raw.overallGrade : "C",
+    metrics: {
+      authoritySignals:   clamp(metrics.authoritySignals),
+      citationDirectness: clamp(metrics.citationDirectness),
+      entityAlignment:    clamp(metrics.entityAlignment),
+      readabilityAndFlow: clamp(metrics.readabilityAndFlow),
+      structuredDataScore: clamp(metrics.structuredDataScore),
+    },
+    aiPlatformsScore: aiPlatforms.length > 0
+      ? aiPlatforms.map((p: any) => ({
+          platform: String(p.platform || "Unknown"),
+          citationProbability: clamp(p.citationProbability),
+          viabilityStatus: validViability.includes(p.viabilityStatus)
+            ? p.viabilityStatus
+            : "Moderate Citation",
+        }))
+      : defaultPlatforms,
+    geoBoostActions: actions.map((a: any) => ({
+      category: validCategories.includes(a.category) ? a.category : "Structured Data",
+      action: String(a.action || "Review content structure"),
+      impact: validImpacts.includes(a.impact) ? a.impact : "Medium",
+      revisedFragment: String(
+        a.revisedFragment || a.suggestedRewrite || a.action || "Optimize this section for AI citation readiness."
+      ),
+    })),
+    summaryFeedback: String(
+      raw.summaryFeedback || raw.summary || raw.feedback ||
+      "Analysis complete. Review the metrics above for improvement opportunities."
+    ),
+  };
+}
+
 app.post("/api/score-geo-seo", async (req, res) => {
   const { contentToAnalyze } = req.body;
   if (!contentToAnalyze) return res.status(400).json({ error: "contentToAnalyze required" });
 
   try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+    const ollamaRes = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -147,6 +202,7 @@ app.post("/api/score-geo-seo", async (req, res) => {
   "traditionalSeoScore": 0-100,
   "geoScore": 0-100,
   "overallGrade": "A/B/C/D/F",
+  "summaryFeedback": "2-3 sentence expert summary of findings and top priority",
   "metrics": {
     "authoritySignals": 0-100,
     "citationDirectness": 0-100,
@@ -161,10 +217,10 @@ app.post("/api/score-geo-seo", async (req, res) => {
     {"platform":"Gemini","citationProbability":0-100,"viabilityStatus":"Moderate Citation"}
   ],
   "geoBoostActions": [
-    {"category":"Structured Data","action":"Add FAQ schema markup","impact":"Critical"},
-    {"category":"Authoritativeness","action":"Add author bio with credentials","impact":"High"},
-    {"category":"Entity optimization","action":"Include entity-rich descriptions","impact":"Medium"},
-    {"category":"Citation proofing","action":"Add inline citations to claims","impact":"High"}
+    {"category":"Structured Data","action":"Add FAQ schema markup","impact":"Critical","revisedFragment":"<FAQPage><Question>Your question here?</Question><Answer>Your answer.</Answer></FAQPage>"},
+    {"category":"Authoritativeness","action":"Add author bio with credentials","impact":"High","revisedFragment":"Written by [Name], [Title] with X years in [field]."},
+    {"category":"Entity optimization","action":"Include entity-rich descriptions","impact":"Medium","revisedFragment":"Revised copy that includes key entities and named concepts."},
+    {"category":"Citation proofing","action":"Add inline citations to claims","impact":"High","revisedFragment":"According to [Source], [statistic or fact]."}
   ]
 }` },
           { role: "user", content: `Analyze this content for SEO and AI citation readiness:\n\n${contentToAnalyze}` }
@@ -174,22 +230,26 @@ app.post("/api/score-geo-seo", async (req, res) => {
       })
     });
 
-    const data = await response.json();
-    const content = data.message?.content || "{}";
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      const result = jsonMatch ? JSON.parse(jsonMatch[0]) : {
-        seoScore: 50, geoScore: 50, overallGrade: "C",
-        metrics: { authoritySignals: 50, citationDirectness: 50, entityAlignment: 50, readabilityAndFlow: 50, structuredDataScore: 50 },
-        aiPlatformsScore: [{platform:"ChatGPT",citationProbability:50,viabilityStatus:"Moderate Citation"},{platform:"Perplexity",citationProbability:50,viabilityStatus:"Moderate Citation"},{platform:"Claude",citationProbability:50,viabilityStatus:"Moderate Citation"},{platform:"Gemini",citationProbability:50,viabilityStatus:"Moderate Citation"}],
-        geoBoostActions: [{category:"Structured Data",action:"Add FAQ schema markup",impact:"Critical"},{category:"Authoritativeness",action:"Add author bio",impact:"High"}]
-      };
-      res.json(result);
-    } catch {
-      res.status(500).json({ error: "Failed to parse AI response" });
+    if (!ollamaRes.ok) {
+      const errText = await ollamaRes.text();
+      console.error("Ollama /api/chat error:", ollamaRes.status, errText);
+      return res.status(502).json({ error: `Ollama returned ${ollamaRes.status}: ${errText}` });
     }
+
+    let raw: any = {};
+    try {
+      const data = await ollamaRes.json();
+      const content = data.message?.content || "{}";
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      raw = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+    } catch (parseErr: any) {
+      console.error("Failed to parse Ollama scorecard JSON:", parseErr.message);
+    }
+
+    res.json(normalizeScorecard(raw, contentToAnalyze));
   } catch (error: any) {
-    res.status(500).json({ error: "Ollama unreachable" });
+    console.error("score-geo-seo fetch error:", error.message);
+    res.status(502).json({ error: "Ollama unreachable", hint: "Check OLLAMA_BASE_URL" });
   }
 });
 

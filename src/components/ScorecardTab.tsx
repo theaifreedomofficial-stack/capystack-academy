@@ -137,7 +137,7 @@ export default function ScorecardTab({ onScore, initialData }: ScorecardTabProps
                 LLM Rec-Engine Odds
               </h4>
               <div className="space-y-2.5">
-                {result.aiPlatformsScore.map((platform, idx) => (
+                {(result.aiPlatformsScore ?? []).map((platform, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-xs font-mono">
                       <span className="text-slate-300 font-sans font-medium">{platform.platform}</span>
@@ -205,7 +205,7 @@ export default function ScorecardTab({ onScore, initialData }: ScorecardTabProps
               </div>
 
               <div className="space-y-3">
-                {result.geoBoostActions.map((action, i) => (
+                {(result.geoBoostActions ?? []).map((action, i) => (
                   <div key={i} className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/20 transition space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">

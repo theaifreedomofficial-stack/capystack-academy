@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
+import Stripe from "stripe";
 
-dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 const app = express();
 app.use(express.json());
@@ -71,8 +72,7 @@ function startServer() {
 
 
 // Stripe Checkout
-const Stripe = require("stripe");
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-11-20.acacia" });
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-11-20.acacia" as any });
 
 app.post("/api/stripe/create-checkout-session", async (req: any, res: any) => {
   const { planName, priceAmount, billingPeriod } = req.body;

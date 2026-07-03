@@ -48,9 +48,9 @@ export default function BrandConfigurator({ brandProfile, onProfileChange }: Bra
   return (
     <div id="brand-voice-configurator-container" className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       {/* Header ribbon */}
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+      <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-slate-950 font-bold">
+          <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-slate-950 font-bold">
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -64,7 +64,7 @@ export default function BrandConfigurator({ brandProfile, onProfileChange }: Bra
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition"
+          className="self-start sm:self-auto shrink-0 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition"
         >
           {isExpanded ? "Collapse" : "Configure"}
         </button>
@@ -88,15 +88,15 @@ export default function BrandConfigurator({ brandProfile, onProfileChange }: Bra
                 />
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                  <Sliders className="h-3.5 w-3.5" />
+                  <Sliders className="h-3.5 w-3.5 shrink-0" />
                   No tedious questions: Decodes design layout & tone in 1 click
                 </span>
                 <button
                   type="submit"
                   disabled={loading || !inputText.trim()}
-                  className="flex items-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 text-slate-950 font-bold text-xs px-5 py-2.5 transition"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 text-slate-950 font-bold text-xs px-5 py-2.5 transition"
                 >
                   {loading ? (
                     <>

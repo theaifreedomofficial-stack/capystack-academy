@@ -425,10 +425,6 @@ Using automated templates—hosted on personal VPS rigs—lets creators convert 
           {activeTab === "course" && (
             <InteractiveCourseTab />
           )}
-
-            {activeTab === "maps" && (
-              <MapsScraperTab />
-          )}
         </div>
 
       </main>

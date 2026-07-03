@@ -177,14 +177,14 @@ export const codeStep = async (inputs) => {
           
           {/* n8n Workflow JSON */}
           <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-orange-400 animate-pulse" />
+                <span className="h-2 w-2 shrink-0 rounded-full bg-orange-400 animate-pulse" />
                 n8n Workflow Integration Flow Blueprint
               </h3>
               <button
                 onClick={() => handleCopy("n8n", n8nWorkflowExample)}
-                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
+                className="self-start sm:self-auto shrink-0 text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
               >
                 {copiedSection === "n8n" ? (
                   <span className="text-emerald-400 font-bold">✓ Copied Code</span>
@@ -210,14 +210,14 @@ export const codeStep = async (inputs) => {
 
           {/* Activepieces Flow Script */}
           <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-pink-400" />
+                <span className="h-2 w-2 shrink-0 rounded-full bg-pink-400" />
                 Activepieces Webhook & Custom Code Step
               </h3>
               <button
                 onClick={() => handleCopy("activepieces", activepiecesExample)}
-                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
+                className="self-start sm:self-auto shrink-0 text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
               >
                 {copiedSection === "activepieces" ? (
                   <span className="text-emerald-400 font-bold">✓ Copied Code</span>
@@ -239,14 +239,14 @@ export const codeStep = async (inputs) => {
 
           {/* Model Context Protocol (MCP) Section */}
           <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-indigo-400" />
+                <span className="h-2 w-2 shrink-0 rounded-full bg-indigo-400" />
                 Model Context Protocol (MCP) Schema & Setup
               </h3>
               <button
                 onClick={() => handleCopy("mcp", mcpSchemaExample)}
-                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
+                className="self-start sm:self-auto shrink-0 text-xs text-slate-400 hover:text-white flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
               >
                 {copiedSection === "mcp" ? (
                   <span className="text-emerald-400 font-bold">✓ Copied Manifest</span>
@@ -267,11 +267,11 @@ export const codeStep = async (inputs) => {
               </div>
 
               <div className="border-t border-slate-900 pt-4 space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="block text-[10px] font-mono text-slate-500 uppercase">Claude Desktop config: %APPDATA%/Claude/claude_desktop_config.json</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5">
+                  <span className="block text-[10px] font-mono text-slate-500 uppercase break-all">Claude Desktop config: %APPDATA%/Claude/claude_desktop_config.json</span>
                   <button
                     onClick={() => handleCopy("mcp_config", claudeDesktopConfig)}
-                    className="text-[9px] text-indigo-400 hover:text-indigo-300"
+                    className="self-start sm:self-auto shrink-0 text-[9px] text-indigo-400 hover:text-indigo-300"
                   >
                     {copiedSection === "mcp_config" ? "Copied Config!" : "Copy config block"}
                   </button>

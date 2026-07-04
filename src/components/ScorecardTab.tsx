@@ -229,10 +229,10 @@ export default function ScorecardTab({ onScore, initialData }: ScorecardTabProps
                       onClick={() => handleCopy(action.revisedFragment, i)}
                       className="group relative cursor-pointer mt-2 overflow-hidden rounded-lg bg-slate-900 border border-slate-800 hover:border-teal-500 p-3 transition"
                     >
-                      <pre className="text-xs font-mono text-emerald-400 whitespace-pre-wrap select-all font-semibold leading-relaxed">
+                      <pre className="text-xs font-mono text-emerald-400 whitespace-pre-wrap select-all font-semibold leading-relaxed pr-20">
                         {action.revisedFragment}
                       </pre>
-                      <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition flex items-center gap-1.5 bg-slate-950 px-2 py-1 rounded text-[9px] text-slate-400">
+                      <div className="absolute right-3 top-3 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition flex items-center gap-1.5 bg-slate-950 px-2 py-1 rounded text-[9px] text-slate-400">
                         {copiedIndex === i ? (
                           <>
                             <Check className="h-3 w-3 text-emerald-400" />

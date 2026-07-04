@@ -522,9 +522,9 @@ export default function InteractiveCourseTab() {
                       </ul>
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] pt-1.5 font-mono">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] pt-1.5 font-mono">
                       <span className="text-slate-500">Practice Tool: <strong className="text-slate-300 font-bold">{lesson.interactiveTool}</strong></span>
-                      <span className="text-indigo-400 font-bold flex items-center gap-1">Module Active • Learn Now <ChevronRight className="h-3 w-3" /></span>
+                      <span className="text-indigo-400 font-bold flex items-center gap-1 shrink-0">Module Active • Learn Now <ChevronRight className="h-3 w-3" /></span>
                     </div>
                   </div>
                 )}
@@ -1530,11 +1530,11 @@ $ claude
 
               {/* Actionable Copy-Paste prompt sandbox */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest font-black block">Custom Niche Setup prompt</span>
-                  <button 
+                  <button
                     onClick={() => handleCopyText(selectedPlaybook.copyPrompt, "pro")}
-                    className="text-[9.5px] font-mono text-indigo-400 hover:text-indigo-300 font-bold transition flex items-center gap-1"
+                    className="self-start sm:self-auto shrink-0 text-[9.5px] font-mono text-indigo-400 hover:text-indigo-300 font-bold transition flex items-center gap-1"
                   >
                     <Copy className="h-3 w-3" />
                     {copiedPrompt === "pro" ? "Copied!" : "Copy Prompt"}
@@ -1555,9 +1555,9 @@ $ claude
 
               {/* Supercharged Gemini Prompt Container */}
               <div className="bg-slate-950 border border-slate-850 p-4.5 rounded-2xl space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-900 pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-900 pb-2">
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
+                    <Sparkles className="h-4 w-4 shrink-0 text-amber-400 animate-pulse" />
                     <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-extrabold">Your Private Document Engine</span>
                   </div>
                   <button
@@ -1596,7 +1596,7 @@ I need complete clarity on WHEN, WHY, and HOW to connect my entire tech suite to
 - Custom playbooks for Wealth & Consulting, Health & Fit-tech, Relationships & Spiritual Purpose, and B2B Marketing Agencies.
 
 Produce this entire manual with maximum strategic clarity. Include realistic timelines, literal step guides, and actionable checklists so it serves as an authoritative consulting Bible in my Google Drive. Great!`, "master")}
-                    className="text-[9.5px] font-mono text-amber-400 hover:text-amber-300 font-bold transition flex items-center gap-1"
+                    className="self-start sm:self-auto shrink-0 text-[9.5px] font-mono text-amber-400 hover:text-amber-300 font-bold transition flex items-center gap-1"
                   >
                     <Copy className="h-3 w-3" />
                     {copiedPrompt === "master" ? "Copied to Clipboard!" : "Copy Supercharged Prompt"}
@@ -1805,9 +1805,9 @@ Produce this entire manual with maximum strategic clarity. Include realistic tim
 
         {/* Compiled Prompt Output Container */}
         <div className="bg-slate-950 border border-slate-850 rounded-2xl p-4.5 md:p-6 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 text-left">
-              <span className="p-1 bg-slate-900 rounded text-xs select-none">📋</span>
+              <span className="p-1 bg-slate-900 rounded text-xs select-none shrink-0">📋</span>
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-wider font-extrabold text-slate-400 block font-bold">
                   COMPILED COMPREHENSIVE SCRIPT BLUEPRINT
@@ -1820,6 +1820,7 @@ Produce this entire manual with maximum strategic clarity. Include realistic tim
 
             <button
               type="button"
+              className="self-start sm:self-auto shrink-0 text-white hover:text-indigo-305 font-bold bg-indigo-950 p-2 px-4 rounded-xl border border-indigo-900 flex items-center gap-1.5 text-xs transition cursor-pointer"
               onClick={() => {
                 let textToCopy = "";
                 if (activePromptTab === "hooks") {
@@ -1866,7 +1867,6 @@ Provide an exhaustive, structured breakdown of:
                 }
                 handleCopyText(textToCopy, activePromptTab);
               }}
-              className="text-white hover:text-indigo-305 font-bold bg-indigo-950 p-2 px-4 rounded-xl border border-indigo-900 flex items-center gap-1.5 text-xs transition cursor-pointer"
             >
               <Copy className="h-4 w-4" />
               <span>{copiedPrompt === activePromptTab ? "Copied Vault!" : "Copy Active Prompt"}</span>

@@ -296,7 +296,7 @@ export default function MapsScraperTab() {
                     onClick={() => reRunQuery(h)}
                     className="p-2.5 rounded-lg bg-slate-950 border border-slate-850 hover:border-emerald-800/40 transition-all text-left text-xs cursor-pointer group flex items-center justify-between"
                   >
-                    <div className="truncate pr-2">
+                    <div className="min-w-0 truncate pr-2">
                       <span className="block font-bold text-slate-350 capitalize group-hover:text-emerald-400 transition">
                         {h.keyword}
                       </span>
@@ -446,9 +446,9 @@ export default function MapsScraperTab() {
 
                         {/* Email */}
                         <div className="flex items-center justify-between text-slate-350">
-                          <div className="flex items-center gap-1.5 truncate pr-2">
+                          <div className="min-w-0 flex items-center gap-1.5 truncate pr-2">
                             <Mail className="h-3 w-3 text-slate-500 shrink-0" />
-                            <span className="truncate">{lead.email}</span>
+                            <span className="min-w-0 truncate">{lead.email}</span>
                           </div>
                           <button
                             onClick={() => handleCopyEmail(lead.id, lead.email)}

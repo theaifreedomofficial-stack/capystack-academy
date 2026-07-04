@@ -153,7 +153,7 @@ export default function CompetitorTab({ onAnalyze, initialData }: CompetitorTabP
               <div className="space-y-2">
                 {(result.aiCitations ?? []).map((citation, index) => (
                   <div key={index} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950 border border-slate-900">
-                    <div className="truncate pr-1">
+                    <div className="min-w-0 truncate pr-1">
                       <span className="text-[10px] uppercase font-mono text-slate-400 block tracking-wide">
                         {citation.source}
                       </span>
